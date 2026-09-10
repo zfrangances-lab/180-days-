@@ -1,4 +1,4 @@
-const CACHE = '180-days-v4';
+const CACHE = '180-days-v5';
 const ASSETS = ['./manifest.json','./icon-192.png','./icon-512.png','./spider-theme.css'];
 
 self.addEventListener('install', event => {
@@ -108,7 +108,7 @@ self.addEventListener('fetch', event => {
         const response = await fetch(req, {cache:'no-store'});
         let text = await response.text();
         if (!text.includes('spider-theme.css')) {
-          text = text.replace('</head>', '<link rel="stylesheet" href="spider-theme.css">\n</head>');
+          text = text.replace('</head>', '<link rel="stylesheet" href="spider-theme.css?v=5">\n</head>');
         }
         if (!text.includes('id="splashScreen"')) {
           text = text.replace('<body>', '<body>\n' + splashMarkup);
