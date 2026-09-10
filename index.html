@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>180 Days</title>
+  <meta name="theme-color" content="#0d1017" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="180 Days" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <style>
+    :root {
+      --bg: #0d1017;
+      --card: #151a24;
+      --card-2: #1b2230;
+      --text: #f5f7fb;
+      --muted: #9ca7b8;
+      --line: #2a3344;
+      --accent: #7ee787;
+      --accent-2: #58a6ff;
+      --reward: #f0c674;
+      --danger: #ff7b72;
+      --shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(88,166,255,.09), transparent 28%),
+        radial-gradient(circle at top right, rgba(126,231,135,.07), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(13,16,23,.87);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: auto;
+      padding: 16px 18px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .progress-wrap {
+      background: #0a0d12;
+      border: 1px solid var(--line);
+      height: 15px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      transition: width .25s ease;
+    }
+
+    .stats {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 18px 80px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--card-2);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { filter: brightness(1.08); }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .month {
+      margin: 26px 0 34px;
+    }
+
+    .month-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .month-title h2 {
+      margin: 0;
+      font-size: 22px;
+      text-transform: capitalize;
+    }
+
+    .month-title span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .days {
+      display: grid;
+      gap: 12px;
+    }
+
+    .day {
+      background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)), var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .day.today {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 1px rgba(88,166,255,.18), var(--shadow);
+    }
+
+    .day.done-all {
+      border-color: rgba(126,231,135,.65);
+    }
+
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+
+    .date {
+      font-weight: 800;
+      text-transform: capitalize;
+    }
+
+    .day-index {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .goals {
+      display: grid;
+      gap: 8px;
+    }
+
+    .goal-row {
+      display: grid;
+      grid-template-columns: 26px 1fr 36px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .goal-input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: #0f141d;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    .goal-input:focus {
+      border-color: var(--accent-2);
+    }
+
+    .goal-row.checked .goal-input {
+      text-decoration: line-through;
+      color: var(--muted);
+      opacity: .75;
+    }
+
+    .icon-btn {
+      padding: 7px 0;
+      border-radius: 10px;
+    }
+
+    .add-goal {
+      width: 100%;
+      margin-top: 9px;
+      color: var(--accent-2);
+    }
+
+    .reward {
+      margin-top: 13px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(240,198,116,.32);
+      background: rgba(240,198,116,.08);
+      color: #f7dfa5;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .reward strong { color: var(--reward); }
+
+    .reward.locked {
+      opacity: .55;
+      filter: grayscale(.25);
+    }
+
+    .empty-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 760px) {
+      .days {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1050px) {
+      .days {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .recurring-panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .recurring-panel h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    .recurring-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .weekdays {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .weekday-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f141d;
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .weekday-chip input {
+      width: 17px;
+      height: 17px;
+    }
+
+    .recurring-panel input[type="text"],
+    .recurring-panel select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #0f141d;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    .recurring-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+
+    .streaks {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .streak-card {
+      background: var(--card-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .streak-card strong {
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .day.streak-day {
+      box-shadow: 0 0 0 1px rgba(126,231,135,.22), var(--shadow);
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>6 Meses de Progreso</h1>
+      <div class="subtitle">Del 14 de septiembre de 2026 al 14 de marzo de 2027 · metas diarias + recompensas</div>
+      <div class="topbar">
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="stats" id="stats">0 / 0 completados</div>
+      </div>
+      <div class="streaks">
+        <div class="streak-card">🔥 Racha actual: <strong id="currentStreak">0 días</strong></div>
+        <div class="streak-card">🏆 Mejor racha: <strong id="bestStreak">0 días</strong></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <button onclick="scrollToday()">Ir a hoy</button>
+      <button onclick="addGoalToAll()">Añadir objetivo a todos los días</button>
+      <button onclick="exportData()">Exportar progreso</button>
+      <button onclick="importData()">Importar progreso</button>
+      <button class="danger" onclick="resetAll()">Reiniciar todo</button>
+    </div>
+
+
+    <section class="recurring-panel">
+      <h3>📱 Instalar como app</h3>
+      <div class="empty-note">
+        En iPhone: abre esta página en Safari → botón Compartir → <strong>Añadir a pantalla de inicio</strong>.
+        Después podrás abrirla como una app independiente.
+      </div>
+    </section>
+
+    <section class="recurring-panel">
+      <h3>Objetivo recurrente por días de la semana</h3>
+      <div class="recurring-grid">
+        <input id="recurringGoalText" type="text" placeholder="Ej.: Ir al gym, estudiar inglés, leer 20 min..." />
+
+        <div class="weekdays">
+          <label class="weekday-chip"><input type="checkbox" value="1" class="weekday-check"> Lunes</label>
+          <label class="weekday-chip"><input type="checkbox" value="2" class="weekday-check"> Martes</label>
+          <label class="weekday-chip"><input type="checkbox" value="3" class="weekday-check"> Miércoles</label>
+          <label class="weekday-chip"><input type="checkbox" value="4" class="weekday-check"> Jueves</label>
+          <label class="weekday-chip"><input type="checkbox" value="5" class="weekday-check"> Viernes</label>
+          <label class="weekday-chip"><input type="checkbox" value="6" class="weekday-check"> Sábado</label>
+          <label class="weekday-chip"><input type="checkbox" value="0" class="weekday-check"> Domingo</label>
+        </div>
+
+        <div class="recurring-actions">
+          <button onclick="selectAllWeekdays()">Seleccionar todos</button>
+          <button onclick="clearWeekdays()">Quitar selección</button>
+          <button onclick="addRecurringGoal()">Aplicar objetivo recurrente</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="calendar"></div>
+  </main>
+
+<script>
+const START = new Date('2026-09-14T00:00:00');
+const END = new Date('2027-03-14T00:00:00');
+const STORAGE_KEY = 'avance_lineal_6_meses_v1';
+
+const rewardPool = [
+  '🎮 60 minutos de videojuegos',
+  '🎮 90 minutos de videojuegos',
+  '🎬 Ver una película sin culpa',
+  '🍿 Noche de película + snack favorito',
+  '🚶 Salir a caminar escuchando música',
+  '☕ Ir por una bebida o café que te guste',
+  '🍔 Permitirte una comida favorita',
+  '📺 Ver 2 episodios de una serie',
+  '🛌 30 minutos extra de descanso',
+  '🛍️ Salir a mirar tiendas o darte una vuelta',
+  '👥 Salir con amigos',
+  '🎧 Una hora libre para música, YouTube o entretenimiento'
+];
+
+const defaultGoalPlaceholders = [
+  'Objetivo principal del día',
+  'Objetivo secundario',
+  'Hábito / mejora personal'
+];
+
+let state = loadState();
+
+function keyFor(date) {
+  return date.toISOString().slice(0,10);
+}
+
+function loadState() {
+  try {
+    const loaded = JSON.parse(localStorage.getItem(STORAGE_KEY)) || { days: {}, rewards: {} };
+
+    // Remove empty default rows from earlier versions while preserving real goals.
+    if (loaded.days) {
+      Object.values(loaded.days).forEach(day => {
+        if (Array.isArray(day.goals)) {
+          day.goals = day.goals.filter(goal => goal.text && goal.text.trim());
+        }
+      });
+    }
+
+    return loaded;
+  } catch {
+    return { days: {}, rewards: {} };
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateProgress();
+}
+
+function seededRandom(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0) / 4294967296;
+}
+
+function rewardForDate(date) {
+  const key = keyFor(date);
+  if (state.rewards[key] !== undefined) return state.rewards[key];
+
+  const chance = seededRandom(key + '-reward-chance');
+  if (chance < 0.24) {
+    const idx = Math.floor(seededRandom(key + '-reward-pick') * rewardPool.length);
+    state.rewards[key] = rewardPool[idx];
+  } else {
+    state.rewards[key] = null;
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  return state.rewards[key];
+}
+
+function ensureDay(key) {
+  if (!state.days[key]) {
+    state.days[key] = {
+      goals: []
+    };
+  }
+  return state.days[key];
+}
+
+function monthName(date) {
+  return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+}
+
+function fullDate(date) {
+  return date.toLocaleDateString('es-ES', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  });
+}
+
+function render() {
+  const root = document.getElementById('calendar');
+  root.innerHTML = '';
+
+  let current = new Date(START);
+  let monthBlock = null;
+  let monthDays = null;
+  let currentMonth = -1;
+  let dayIndex = 1;
+
+  while (current <= END) {
+    if (current.getMonth() !== currentMonth) {
+      currentMonth = current.getMonth();
+      monthBlock = document.createElement('section');
+      monthBlock.className = 'month';
+
+      const title = document.createElement('div');
+      title.className = 'month-title';
+      title.innerHTML = `<h2>${monthName(current)}</h2><span>avance lineal</span>`;
+
+      monthDays = document.createElement('div');
+      monthDays.className = 'days';
+
+      monthBlock.appendChild(title);
+      monthBlock.appendChild(monthDays);
+      root.appendChild(monthBlock);
+    }
+
+    monthDays.appendChild(renderDay(new Date(current), dayIndex));
+    current.setDate(current.getDate() + 1);
+    dayIndex++;
+  }
+
+  updateProgress();
+}
+
+function renderDay(date, dayIndex) {
+  const key = keyFor(date);
+  const data = ensureDay(key);
+  const card = document.createElement('article');
+  card.className = 'day';
+  card.id = `day-${key}`;
+
+  const todayKey = keyFor(new Date());
+  if (key === todayKey) card.classList.add('today');
+
+  const head = document.createElement('div');
+  head.className = 'day-head';
+  head.innerHTML = `<div class="date">${fullDate(date)}</div><div class="day-index">Día ${dayIndex}</div>`;
+  card.appendChild(head);
+
+  const goals = document.createElement('div');
+  goals.className = 'goals';
+
+  data.goals.forEach((goal, idx) => {
+    goals.appendChild(renderGoalRow(key, idx, goal));
+  });
+
+  card.appendChild(goals);
+
+  const add = document.createElement('button');
+  add.className = 'add-goal';
+  add.textContent = '+ Añadir objetivo';
+  add.onclick = () => {
+    data.goals.push({ text: '', done: false });
+    saveState();
+    render();
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(`#day-${key} .goal-input`);
+      inputs[inputs.length - 1]?.focus();
+    }, 0);
+  };
+  card.appendChild(add);
+
+  const reward = rewardForDate(date);
+  if (reward) {
+    const rewardBox = document.createElement('div');
+    rewardBox.className = 'reward';
+
+    const allFilledGoals = data.goals.filter(g => g.text.trim());
+    const rewardUnlocked = allFilledGoals.length > 0 && allFilledGoals.every(g => g.done);
+    if (!rewardUnlocked) rewardBox.classList.add('locked');
+
+    rewardBox.innerHTML = rewardUnlocked
+      ? `<strong>Recompensa desbloqueada:</strong> ${reward}`
+      : `<strong>Recompensa del día:</strong> ${reward}<br><span>Completa tus objetivos escritos para desbloquearla.</span>`;
+
+    card.appendChild(rewardBox);
+  }
+
+  setDayCompletionClass(card, data);
+  if (dayIsComplete(date)) card.classList.add('streak-day');
+  return card;
+}
+
+function renderGoalRow(dayKey, idx, goal) {
+  const row = document.createElement('div');
+  row.className = 'goal-row' + (goal.done ? ' checked' : '');
+
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.checked = goal.done;
+  check.onchange = () => {
+    state.days[dayKey].goals[idx].done = check.checked;
+    saveState();
+    render();
+  };
+
+  const input = document.createElement('input');
+  input.className = 'goal-input';
+  input.type = 'text';
+  input.placeholder = defaultGoalPlaceholders[idx] || 'Escribe un objetivo';
+  input.value = goal.text;
+  input.oninput = () => {
+    state.days[dayKey].goals[idx].text = input.value;
+    saveState();
+  };
+
+  const del = document.createElement('button');
+  del.className = 'icon-btn';
+  del.textContent = '×';
+  del.title = 'Eliminar objetivo';
+  del.onclick = () => {
+    state.days[dayKey].goals.splice(idx, 1);
+    saveState();
+    render();
+  };
+
+  row.append(check, input, del);
+  return row;
+}
+
+function setDayCompletionClass(card, data) {
+  const filled = data.goals.filter(g => g.text.trim());
+  if (filled.length && filled.every(g => g.done)) card.classList.add('done-all');
+}
+
+function dayIsComplete(date) {
+  const key = keyFor(date);
+  const day = state.days[key];
+  if (!day || !Array.isArray(day.goals)) return false;
+
+  const filled = day.goals.filter(g => g.text && g.text.trim());
+  if (!filled.length) return false;
+
+  return filled.every(g => g.done);
+}
+
+function calculateStreaks() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const start = new Date(START);
+  start.setHours(0,0,0,0);
+
+  const end = new Date(END);
+  end.setHours(0,0,0,0);
+
+  let best = 0;
+  let running = 0;
+
+  let d = new Date(start);
+  const streakEnd = today < end ? today : end;
+
+  while (d <= streakEnd) {
+    if (dayIsComplete(d)) {
+      running++;
+      if (running > best) best = running;
+    } else {
+      running = 0;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+
+  let current = 0;
+  let cursor = new Date(streakEnd);
+
+  while (cursor >= start && dayIsComplete(cursor)) {
+    current++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return { current, best };
+}
+
+function updateProgress() {
+  let total = 0;
+  let done = 0;
+
+  Object.values(state.days).forEach(day => {
+    day.goals.forEach(goal => {
+      if (goal.text.trim()) {
+        total++;
+        if (goal.done) done++;
+      }
+    });
+  });
+
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressBar').style.width = `${pct}%`;
+  document.getElementById('stats').textContent = `${done} / ${total} completados · ${pct}%`;
+
+  const streaks = calculateStreaks();
+  document.getElementById('currentStreak').textContent =
+    `${streaks.current} día${streaks.current === 1 ? '' : 's'}`;
+  document.getElementById('bestStreak').textContent =
+    `${streaks.best} día${streaks.best === 1 ? '' : 's'}`;
+}
+function scrollToday() {
+  const today = keyFor(new Date());
+  const target = document.getElementById(`day-${today}`);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    alert('Hoy está fuera del rango de este calendario.');
+  }
+}
+
+function addGoalToAll() {
+  const text = prompt('Objetivo que quieres añadir a todos los días:');
+  if (!text || !text.trim()) return;
+
+  let d = new Date(START);
+  while (d <= END) {
+    const key = keyFor(d);
+    const day = ensureDay(key);
+    day.goals.push({ text: text.trim(), done: false });
+    d.setDate(d.getDate() + 1);
+  }
+  saveState();
+  render();
+}
+
+
+function selectedWeekdays() {
+  return Array.from(document.querySelectorAll('.weekday-check:checked'))
+    .map(el => Number(el.value));
+}
+
+function selectAllWeekdays() {
+  document.querySelectorAll('.weekday-check').forEach(el => el.checked = true);
+}
+
+function clearWeekdays() {
+  document.querySelectorAll('.weekday-check').forEach(el => el.checked = false);
+}
+
+function addRecurringGoal() {
+  const textEl = document.getElementById('recurringGoalText');
+  const text = textEl.value.trim();
+  const weekdays = selectedWeekdays();
+
+  if (!text) {
+    alert('Escribe primero el objetivo que quieres repetir.');
+    return;
+  }
+
+  if (!weekdays.length) {
+    alert('Selecciona al menos un día de la semana.');
+    return;
+  }
+
+  let count = 0;
+  let d = new Date(START);
+
+  while (d <= END) {
+    if (weekdays.includes(d.getDay())) {
+      const key = keyFor(d);
+      const day = ensureDay(key);
+
+      const alreadyExists = day.goals.some(g =>
+        g.text.trim().toLowerCase() === text.toLowerCase()
+      );
+
+      if (!alreadyExists) {
+        day.goals.push({ text, done: false });
+        count++;
+      }
+    }
+    d.setDate(d.getDate() + 1);
+  }
+
+  saveState();
+  render();
+  textEl.value = '';
+  clearWeekdays();
+
+  alert(`Objetivo añadido en ${count} día${count === 1 ? '' : 's'} del calendario.`);
+}
+
+function exportData() {
+  const payload = JSON.stringify(state, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'progreso-6-meses.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!parsed.days || !parsed.rewards) throw new Error('Formato inválido');
+      state = parsed;
+      saveState();
+      render();
+      alert('Progreso importado correctamente.');
+    } catch {
+      alert('No se pudo importar el archivo.');
+    }
+  };
+  input.click();
+}
+
+function resetAll() {
+  if (!confirm('¿Seguro que quieres borrar todos los objetivos, checks y progreso?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  state = { days: {}, rewards: {} };
+  render();
+}
+
+render();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>

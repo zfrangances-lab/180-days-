@@ -1,0 +1,21 @@
+{
+  "name": "180 Days - Progreso",
+  "short_name": "180 Days",
+  "description": "Calendario de progreso de 6 meses con objetivos, rachas y recompensas.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1017",
+  "theme_color": "#0d1017",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

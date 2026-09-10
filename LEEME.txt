@@ -1,0 +1,19 @@
+180 Days - instalación
+
+IMPORTANTE:
+Una PWA necesita servirse desde una página web (HTTPS) para que iPhone la instale correctamente como app.
+
+Archivos incluidos:
+- index.html
+- manifest.json
+- service-worker.js
+- icon-192.png
+- icon-512.png
+
+En iPhone, una vez alojada:
+1. Abre la URL en Safari.
+2. Pulsa Compartir.
+3. Pulsa “Añadir a pantalla de inicio”.
+4. Abre “180 Days” desde el icono.
+
+El progreso se guarda localmente en el navegador/dispositivo.
