@@ -1,5 +1,5 @@
-const CACHE = '180-days-v5';
-const ASSETS = ['./manifest.json','./icon-192.png','./icon-512.png','./spider-theme.css'];
+const CACHE = '180-days-v6';
+const ASSETS = ['./manifest.json','./icon-192.png','./icon-512.png','./spider-theme.css','./runloop.html'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
@@ -71,6 +71,14 @@ const splashMarkup = `
   </div>
 </section>`;
 
+const runloopLauncher = `
+<section id="runloop-launcher" style="margin:0 0 20px;padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.10);background:radial-gradient(circle at 100% 0%,rgba(47,125,246,.16),transparent 38%),radial-gradient(circle at 0 100%,rgba(239,35,60,.14),transparent 38%),linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),#0b101a;box-shadow:0 18px 45px rgba(0,0,0,.32);position:relative;overflow:hidden;">
+  <div style="font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#ff6b79;margin-bottom:7px;">🕷️ Spider Run</div>
+  <div style="font-size:20px;font-weight:900;letter-spacing:-.03em;margin-bottom:5px;">Planifica tu recorrido</div>
+  <div style="font-size:13px;line-height:1.45;color:#93a4b8;margin-bottom:13px;">Elige cuánto tiempo quieres trotar, usa tu ubicación y genera una ruta aproximada.</div>
+  <a href="runloop.html" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:white;font-weight:900;font-size:14px;padding:12px 16px;border-radius:13px;background:linear-gradient(135deg,#ef233c,#b80d28);box-shadow:0 12px 28px rgba(239,35,60,.28);">Abrir RunLoop →</a>
+</section>`;
+
 const splashScript = `
 <script>
 (() => {
@@ -108,10 +116,13 @@ self.addEventListener('fetch', event => {
         const response = await fetch(req, {cache:'no-store'});
         let text = await response.text();
         if (!text.includes('spider-theme.css')) {
-          text = text.replace('</head>', '<link rel="stylesheet" href="spider-theme.css?v=5">\n</head>');
+          text = text.replace('</head>', '<link rel="stylesheet" href="spider-theme.css?v=6">\n</head>');
         }
         if (!text.includes('id="splashScreen"')) {
           text = text.replace('<body>', '<body>\n' + splashMarkup);
+        }
+        if (!text.includes('id="runloop-launcher"')) {
+          text = text.replace('<div class="controls">', runloopLauncher + '\n<div class="controls">');
         }
         if (!text.includes('180DaysRecovery')) {
           text = text.replace('</body>', protectionScript + '\n</body>');
