@@ -1,5 +1,5 @@
-const CACHE = '180-days-v3';
-const ASSETS = ['./manifest.json','./icon-192.png','./icon-512.png'];
+const CACHE = '180-days-v4';
+const ASSETS = ['./manifest.json','./icon-192.png','./icon-512.png','./spider-theme.css'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
@@ -54,6 +54,49 @@ const protectionScript = `
 })();
 <\/script>`;
 
+const splashMarkup = `
+<section class="splash" id="splashScreen" aria-label="Pantalla de inicio">
+  <div class="city-grid"></div>
+  <div class="web one"></div><div class="web two"></div>
+  <div class="splash-card">
+    <div class="hero-badge">🕷️ Modo héroe activado</div>
+    <h1>6 MESES<br><span>DE PROGRESO</span></h1>
+    <p>Cada día cuenta. Completa tus objetivos, protege tu racha y desbloquea tus recompensas.</p>
+    <div class="splash-stats">
+      <div class="splash-stat">🔥 Racha: <strong id="splashCurrentStreak">0 días</strong></div>
+      <div class="splash-stat">🏆 Mejor: <strong id="splashBestStreak">0 días</strong></div>
+      <div class="splash-stat">⚡ Progreso: <strong id="splashProgress">0%</strong></div>
+    </div>
+    <button class="enter-btn" id="enterAppButton">Entrar al calendario →</button>
+  </div>
+</section>`;
+
+const splashScript = `
+<script>
+(() => {
+  function syncSplash(){
+    const s=document.getElementById('stats');
+    const c=document.getElementById('currentStreak');
+    const b=document.getElementById('bestStreak');
+    const sp=document.getElementById('splashProgress');
+    const sc=document.getElementById('splashCurrentStreak');
+    const sb=document.getElementById('splashBestStreak');
+    if(s&&sp){ const m=s.textContent.match(/(\\d+)%/); if(m) sp.textContent=m[1]+'%'; }
+    if(c&&sc) sc.textContent=c.textContent;
+    if(b&&sb) sb.textContent=b.textContent;
+  }
+  const btn=document.getElementById('enterAppButton');
+  if(btn) btn.addEventListener('click',()=>{
+    const splash=document.getElementById('splashScreen');
+    if(splash) splash.classList.add('hidden');
+    setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),120);
+  });
+  syncSplash();
+  setTimeout(syncSplash,100);
+  setTimeout(syncSplash,500);
+})();
+<\/script>`;
+
 self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
@@ -63,9 +106,22 @@ self.addEventListener('fetch', event => {
     event.respondWith((async () => {
       try {
         const response = await fetch(req, {cache:'no-store'});
-        const text = await response.text();
-        const injected = text.includes('180DaysRecovery') ? text : text.replace('</body>', protectionScript + '\n</body>');
-        return new Response(injected, {status: response.status, statusText: response.statusText, headers: {'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
+        let text = await response.text();
+        if (!text.includes('spider-theme.css')) {
+          text = text.replace('</head>', '<link rel="stylesheet" href="spider-theme.css">\n</head>');
+        }
+        if (!text.includes('id="splashScreen"')) {
+          text = text.replace('<body>', '<body>\n' + splashMarkup);
+        }
+        if (!text.includes('180DaysRecovery')) {
+          text = text.replace('</body>', protectionScript + '\n</body>');
+        }
+        if (!text.includes('enterAppButton')) {
+          text = text.replace('</body>', splashScript + '\n</body>');
+        } else if (!text.includes('syncSplash')) {
+          text = text.replace('</body>', splashScript + '\n</body>');
+        }
+        return new Response(text, {status: response.status, statusText: response.statusText, headers: {'content-type':'text/html; charset=utf-8','cache-control':'no-store'}});
       } catch (e) {
         const cached = await caches.match('./index.html');
         if (cached) return cached;
