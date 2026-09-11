@@ -12,12 +12,7 @@
 </style>
 </head>
 <body>
-<div class="shell">
-<header class="nav-wrap"><div class="brand">180 <span>DÍAS</span></div><nav class="tabs" aria-label="Secciones"><button class="tab active" data-page="calendar.html">📅 Calendario</button><button class="tab" data-page="nutrition.html">🍽️ Nutrición</button><button class="tab" data-page="runloop.html">🏃 RunLoop</button></nav></header>
-<iframe id="appView" class="view" src="calendar.html" title="180 Days" allow="geolocation *"></iframe>
-</div>
-<script>
-const frame=document.getElementById('appView');const tabs=[...document.querySelectorAll('.tab')];function openPage(page,push=true){frame.src=page;tabs.forEach(t=>t.classList.toggle('active',t.dataset.page===page));if(push)history.replaceState(null,'','#'+page.replace('.html',''))}tabs.forEach(t=>t.addEventListener('click',()=>openPage(t.dataset.page)));const hash=location.hash.replace('#','');if(hash==='nutrition')openPage('nutrition.html',false);else if(hash==='runloop')openPage('runloop.html',false);else openPage('calendar.html',false);if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}))}
-</script>
+<div class="shell"><header class="nav-wrap"><div class="brand">180 <span>DÍAS</span></div><nav class="tabs"><button class="tab active" data-page="calendar.html">📅 Calendario</button><button class="tab" data-page="nutrition.html">🍽️ Nutrición</button><button class="tab" data-page="runloop.html">🏃 RunLoop</button></nav></header><iframe id="appView" class="view" src="calendar.html" title="180 Days" allow="geolocation *"></iframe></div>
+<script>const frame=document.getElementById('appView');const tabs=[...document.querySelectorAll('.tab')];function openPage(page,push=true){frame.src=page;tabs.forEach(t=>t.classList.toggle('active',t.dataset.page===page));if(push)history.replaceState(null,'','#'+page.replace('.html',''))}tabs.forEach(t=>t.addEventListener('click',()=>openPage(t.dataset.page)));const hash=location.hash.replace('#','');if(hash==='nutrition')openPage('nutrition.html',false);else if(hash==='runloop')openPage('runloop.html',false);else openPage('calendar.html',false);</script>
 </body>
 </html>
